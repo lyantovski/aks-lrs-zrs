@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azuredisk-test-premium-lrs-disk-pvc
+  namespace: azuredisk-lrs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: azuredisk-test-premium-lrs-disk-sc

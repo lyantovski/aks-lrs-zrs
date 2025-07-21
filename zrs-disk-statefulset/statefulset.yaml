@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stateful-mariner-zrs
+  namespace: azuredisk-lrs
+spec:
+  serviceName: "stateful-mariner-zrs"
+  replicas: 2
+  selector:
+    matchLabels:
+      name: stateful-mariner-zrs 
+  template:
+    metadata:
+      labels:
+        name: stateful-mariner-zrs
+    spec:
+      containers:
+        - image: mcr.microsoft.com/cbl-mariner/base/core:2.0
+          name: mariner-azuredisk
+          command:
+            - "/bin/sh"
+            - "-c"
+            - while true; do echo $(date) >> /mnt/azuredisk/outfile; sleep 1; done
+          volumeMounts:
+            - name: azuredisk01
+              mountPath: "/mnt/azuredisk"
+              readOnly: false
+          livenessProbe:
+            exec:
+              command:
+              - /bin/ls
+              - /mnt/azuredisk/outfile
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+              - /bin/ls
+              - /mnt/azuredisk/outfile
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 2
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+  volumeClaimTemplates:
+  - metadata:
+      name: azuredisk01
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "azuredisk-test-premium-zrs-disk-sts-sc"
+      resources:
+        requests:
+          storage: 10Gi

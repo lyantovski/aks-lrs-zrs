@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azuredisk-test-premium-zrs-disk-pvc-cloning
+  namespace: azuredisk-lrs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: azuredisk-test-premium-zrs-disk-sc
+  resources:
+    requests:
+      storage: 10Gi
+  dataSource:
+    kind: PersistentVolumeClaim
+    name: azuredisk-test-premium-lrs-disk-pvc

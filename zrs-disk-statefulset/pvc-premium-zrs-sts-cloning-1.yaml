@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azuredisk01-stateful-mariner-zrs-1
+  namespace: azuredisk-lrs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: azuredisk-test-premium-zrs-disk-sts-sc
+  resources:
+    requests:
+      storage: 10Gi
+  dataSource:
+    kind: PersistentVolumeClaim
+    name: azuredisk01-stateful-mariner-lrs-1

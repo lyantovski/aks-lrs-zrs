@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-nginx-lrs
+  namespace: azuredisk-lrs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: deployment-nginx-lrs
+  template:
+    metadata:
+      labels:
+        app: deployment-nginx-lrs
+    spec:
+      containers:
+      - image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine
+        name: nginx-azuredisk
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "125m"
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        command:
+          - "/bin/sh"
+          - "-c"
+          - while true; do echo $(date) >> /mnt/azuredisk/outfile; sleep 1; done
+        volumeMounts:
+          - name: lrs-azure-disk
+            mountPath: "/mnt/azuredisk"
+            readOnly: false
+      volumes:
+      - name: lrs-azure-disk
+        persistentVolumeClaim:
+          claimName: azuredisk-test-premium-lrs-disk-pvc
